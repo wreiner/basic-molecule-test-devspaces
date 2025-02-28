@@ -96,3 +96,28 @@ Make sure DevSpaces is installed and configured correctly.
 - Make sure the extension `YAML` is installed (should be automatically be installed through `.vscode/extensions.json` and the Ansible extension)
 - Load local devfile for the workspace by clicking `Workspace > Show and Run Commands (F1) > DevSpaces: Restart Workspace From local dev file` and choosing the devfile.yml
 - Run a task defined in the devfile by clicking `Workspace > Run Task > devfile > 6.Molecule: run the full molecule test`
+
+## Additional information
+
+For the user a devspace namespace is created, when the devspace starts.
+
+```
+oc get ns | grep admin
+admin-devspaces                                    Active   20m
+```
+
+The molecule testing pod is started in this namespace.
+
+```
+$ oc get pod -n admin-devspaces
+NAME                                         READY   STATUS    RESTARTS   AGE
+molecule-ubi9-1                              1/1     Running   0          12m
+workspaced9980ba424dd42a9-74cdd6fb94-blfkr   2/2     Running   0          14m
+```
+
+The tooling container is started with the devspaces pod:
+
+```
+$ oc get pod workspaced9980ba424dd42a9-74cdd6fb94-blfkr -n admin-devspaces -o jsonpath='{.spec.containers[*].name}'
+tooling-container che-gateway
+```
